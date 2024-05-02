@@ -50,9 +50,10 @@ def crawl_diemthi(url, wb, sheet_name, tentinh):
 def write_to_excel(wb, sheet_name, sbd, diem_thi):
     # Kiểm tra xem tồn tại sheet_name trong workbook chưa
     if sheet_name not in worksheet_dict:
-        worksheet = wb.create_sheet(sheet_name)
+        worksheet = wb.active
+        worksheet.title = sheet_name
         worksheet_dict[sheet_name] = worksheet
-            # Chèn một hàng mới vào vị trí thứ 1
+        # Chèn một hàng mới vào vị trí thứ 1
         worksheet.insert_rows(1)
         # Ghi số báo danh vào ô A1
         worksheet.cell(row=1, column=1, value="Số báo danh")
@@ -69,6 +70,8 @@ def write_to_excel(wb, sheet_name, sbd, diem_thi):
         worksheet.cell(row=int(sbd)-(startID-1)+1, column=i, value=diem) 
 
     print("SBD", sbd, "written to Excel, sheet", sheet_name)
+
+
 
 
 def read_tinh_data(file_name):
@@ -96,18 +99,20 @@ def convert(a, b):
 if __name__ == '__main__':
     file_name = 'data_tinh.xlsx'
     data_tinh = read_tinh_data(file_name)
-    wb = Workbook()
     for matinh, tentinh in data_tinh:
+        wb = Workbook()
         startID = convert(matinh, 11000001)
-        endID = convert(matinh, 11000100)
+        endID = convert(matinh, 11000004)
         for x in range(startID, endID, +1):
             if len(str(x)) == 7:
                 x = '0' + str(x)
             url = 'https://thptquocgia.edu.vn/diemthi/-/?sbd=' + str(x)
             crawl_diemthi(url, wb, str(tentinh), str(tentinh))
-        wb.save('diem_thi_thptqg_2023.xlsx')
+        tinh = str(tentinh)
+        wb.save(f'C:/Users/Dung/Desktop/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
 
 
 #------THPTQG2023--------
 #bình dương 44000001 - 440014218
-#crawl mã tĩnh, tên tỉnh/thành phố làm cái crawl tự động: https://www.vietjack.com/thong-tin-tuyen-sinh/ 
+
+#wb.save(f'C:/Users/MSI PC/Desktop/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
