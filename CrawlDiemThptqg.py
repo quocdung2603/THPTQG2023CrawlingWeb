@@ -64,15 +64,19 @@ def write_to_excel(wb, sheet_name, sbd, diem_thi):
         worksheet = worksheet_dict[sheet_name]
     # Ghi số báo danh vào cột đầu tiên
     worksheet.cell(row=int(sbd)-(startID-1)+1, column=1, value=str(sbd))
-
+    # Đếm số ô dữ liệu bị trống trên 1 dòng
+    empty_cnt=0
     # Ghi điểm thi vào các cột tiếp theo dựa trên tên môn học
     for i, (mon, diem) in enumerate(diem_thi.items(), start=2):
+        if diem =="": 
+            empty_cnt = empty_cnt + 1
         worksheet.cell(row=int(sbd)-(startID-1)+1, column=i, value=diem) 
-
-    print("SBD", sbd, "written to Excel, sheet", sheet_name)
-
-
-
+    if empty_cnt >=11: 
+        print("Không có thông tin số báo danh",sbd)
+        worksheet.delete_rows(int(sbd)-(startID-1)+1)
+        return
+    else:
+        print("SBD", sbd, "written to Excel, sheet", sheet_name)
 
 def read_tinh_data(file_name):
     data = []
@@ -102,17 +106,19 @@ if __name__ == '__main__':
     for matinh, tentinh in data_tinh:
         wb = Workbook()
         startID = convert(matinh, 11000001)
-        endID = convert(matinh, 11000004)
+        endID = convert(matinh, 11150001)
         for x in range(startID, endID, +1):
             if len(str(x)) == 7:
                 x = '0' + str(x)
             url = 'https://thptquocgia.edu.vn/diemthi/-/?sbd=' + str(x)
             crawl_diemthi(url, wb, str(tentinh), str(tentinh))
         tinh = str(tentinh)
-        wb.save(f'C:/Users/Dung/Desktop/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
+        #wb.save(f'C:/Users/Dung/Desktop/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
+        wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
 
 
 #------THPTQG2023--------
 #bình dương 44000001 - 440014218
+#tphcm 02059988
 
-#wb.save(f'C:/Users/MSI PC/Desktop/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
+#wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/diem_thi_thptqg_2023_{tinh}.xlsx')
