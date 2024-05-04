@@ -16,7 +16,7 @@ def crawl_diemthi(url, wb, sheet_name, tentinh):
 
         # Tìm tất cả các bảng dữ liệu trên trang web
         tables = soup.find_all('table', {'role': 'table', 'class': 'table table-striped table-bordered table-hover responsive-table'})
-
+            
         # Duyệt qua từng bảng để lấy thông tin điểm thi
         for table in tables:
             # Lấy danh sách tên môn học từ hàng đầu tiên của bảng
@@ -78,7 +78,7 @@ def write_to_excel(wb, sheet_name, sbd, diem_thi):
     else:
         print("SBD", sbd, "written to Excel, sheet", sheet_name)
 
-def read_tinh_data(file_name):
+def read_excel(file_name):
     data = []
     wb = load_workbook(filename=file_name)
     ws = wb.active
@@ -89,7 +89,7 @@ def read_tinh_data(file_name):
     for row in rows:
         ma_tinh, ten_tinh = row[:2]  # Truy xuất 2 cột đầu tiên trong mỗi dòng
         data.append((ma_tinh, ten_tinh))
-    
+        
     wb.close()
     return data
 
@@ -102,7 +102,7 @@ def convert(a, b):
     
 if __name__ == '__main__':
     file_name = 'data_tinh.xlsx'
-    data_tinh = read_tinh_data(file_name)
+    data_tinh = read_excel(file_name)
     for matinh, tentinh in data_tinh:
         wb = Workbook()
         startID = convert(matinh, 11000001)
