@@ -1,11 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook, load_workbook
-
+import pyodbc
 # Tạo một từ điển để lưu trữ các worksheet theo tên tỉnh
 worksheet_dict = {}
 diem_thi = {} # Tạo từ điển để lưu trữ thông tin điểm thi của từng bảng
-def crawl_diemthi(url, wb, sheet_name, tentinh):
+conx = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\\SQLEXPRESS;DATABASE=Diem_Thi_THPTQG;UID=lekiet;PWD=123456')
+cursor = conx.cursor()
+
+def crawl_diemthi(url, wb, sheet_name, tentinh, sbd):
     # Gửi yêu cầu GET để lấy nội dung của trang web
     response = requests.get(url)
 
@@ -39,10 +42,17 @@ def crawl_diemthi(url, wb, sheet_name, tentinh):
                         diem_thi[mon] = cell.get_text().strip()
                     else:
                         mon = mon_hoc[i]
-                        diem_thi[mon] = ""
+                        diem_thi[mon] = 0
 
             # Ghi dữ liệu vào tệp Excel
-            write_to_excel(wb, sheet_name, x, diem_thi)
+            print("Số Báo Danh: ",sbd)
+            #print(diem_thi)
+            cursor.execute("insert Diem_Thi values (?,?,?,?,?,?,?,?,?,?,?,?)",
+                        sbd,diem_thi['Toán'],diem_thi['Ngữ văn'],diem_thi['Ngoại ngữ'],diem_thi['Vật lý'],diem_thi['Hóa học'],diem_thi['Sinh học'],diem_thi['Điểm KHTN'],
+                        diem_thi['Lịch sử'],diem_thi['Địa lý'],diem_thi['GDCD'],diem_thi['Điểm KHXH'])
+            conx.commit()
+            #print(diem_thi['Toán'])       
+            #write_to_excel(wb, sheet_name, x, diem_thi)
 
     else:
         print('Failed to retrieve data')
@@ -105,16 +115,20 @@ if __name__ == '__main__':
     data_tinh = read_tinh_data(file_name)
     for matinh, tentinh in data_tinh:
         wb = Workbook()
+        # print(matinh+" "+tentinh)
+        # cursor.execute("insert Tinh values (?,?)",(matinh,tentinh))
+        # cursor.commit()
         startID = convert(matinh, 11000001)
-        endID = convert(matinh, 11150001)
+        endID = convert(matinh, 11000201)
         for x in range(startID, endID, +1):
             if len(str(x)) == 7:
                 x = '0' + str(x)
             url = 'https://thptquocgia.edu.vn/diemthi/-/?sbd=' + str(x)
-            crawl_diemthi(url, wb, str(tentinh), str(tentinh))
+            crawl_diemthi(url, wb, str(tentinh), str(tentinh),str(x))
         tinh = str(tentinh)
-        #wb.save(f'C:/Users/Dung/Desktop/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
-        wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
+        wb.save(f'C:/Users/Dung/Desktop/THPTQG2023/diem_thi_thptqg_2023_{tinh}.xlsx')
+        wb.save(f'D:/Project_Code/Python/CuoiKyPhanTichThietKe/diem_thi_thptqg_2023_{tinh}.xlsx')
+    conx.close()
 
 
 #------THPTQG2023--------
