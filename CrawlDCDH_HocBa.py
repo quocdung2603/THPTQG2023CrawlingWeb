@@ -3,12 +3,12 @@ import requests
 from bs4 import BeautifulSoup
 
 worksheet_dict = {}
-def Crawl_diemchuan(url, tenDH, tvt):
+def Crawl_DCDH_HocBa(url, tenDH, tvt):
     data=[]
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
-        div = soup.find('div',{'id':'tab_1'})
+        div = soup.find('div',{'id':'tab_2'})
         if div:
             tables = div.find('table', {'width':'100%','border':'0','cellpadding':'0','cellspacing':'0'})
             if tables:
@@ -18,6 +18,8 @@ def Crawl_diemchuan(url, tenDH, tvt):
                         dt = [cell.text for cell in tr.find_all('td')]
                         data.append(dt)
                     Write_to_excel(wb, tvt, data)
+    else:
+        print("huhu")
 
 def Write_to_excel(wb, sheet_name, data):
     if sheet_name not in worksheet_dict:
@@ -31,7 +33,6 @@ def Write_to_excel(wb, sheet_name, data):
         worksheet.append(row)   
         
     print("Điểm chuẩn của",sheet_name)
-    
 
 def read_excel(file_name):
     data = []
@@ -43,7 +44,7 @@ def read_excel(file_name):
         tenDH, tvt, href = row[:3]  # Truy xuất 2 cột đầu tiên trong mỗi dòng
         data.append((tenDH, tvt, href))
     wb.close()
-    return data    
+    return data   
 
 if __name__ == '__main__':
     file_name = 'data_TenDH.xlsx'
@@ -51,5 +52,5 @@ if __name__ == '__main__':
     for tenDH, tvt, href in data_DH:
         wb = Workbook()
         url = "https://diemthi.tuyensinh247.com" + str(href)
-        Crawl_diemchuan(url, tenDH, tvt)
-        wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/DCDH2023/{tvt}.xlsx')
+        Crawl_DCDH_HocBa(url, tenDH, tvt)
+        wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/DCDH2023_HB/{tvt}.xlsx')
