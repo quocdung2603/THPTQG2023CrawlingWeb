@@ -1,23 +1,27 @@
 from openpyxl import Workbook, load_workbook
 import requests
 from bs4 import BeautifulSoup
-
+import pyodbc
 worksheet_dict = {}
+conx = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\\SQLEXPRESS;DATABASE=Diem_Thi_THPTQG;UID=lekiet;PWD=123456')
+cursor = conx.cursor()
 def Crawl_diemchuan(url, tenDH, tvt):
     data=[]
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
-        div = soup.find('div',{'id':'tab_1'})
-        if div:
-            tables = div.find('table', {'width':'100%','border':'0','cellpadding':'0','cellspacing':'0'})
-            if tables:
-                trs = tables.find_all('tr',{'class':'bg_white'})
-                if trs:
-                    for tr in trs:
-                        dt = [cell.text for cell in tr.find_all('td')]
-                        data.append(dt)
-                    Write_to_excel(wb, tvt, data)
+        tables = soup.find('table', {'width':'100%','border':'0','cellpadding':'0','cellspacing':'0'})
+        if tables:
+            trs = tables.find_all('tr',{'class':'bg_white'})
+            if trs:
+                for tr in trs:
+                    dt = [cell.text for cell in tr.find_all('td')]
+                    data.append(dt)
+                    print(tvt," ",dt)
+                    cursor.execute("insert DiemDaiHoc values (?,?,?,?,?,?)",(tvt,dt[1],dt[2],dt[3],dt[4],dt[5]))
+                    cursor.commit()
+                    
+                #Write_to_excel(wb, tvt, data)
 
 def Write_to_excel(wb, sheet_name, data):
     if sheet_name not in worksheet_dict:
@@ -51,5 +55,8 @@ if __name__ == '__main__':
     for tenDH, tvt, href in data_DH:
         wb = Workbook()
         url = "https://diemthi.tuyensinh247.com" + str(href)
+        # cursor.execute("insert DaiHoc values (?,?,?)",(tvt,tenDH,url))
+        # cursor.commit()
         Crawl_diemchuan(url, tenDH, tvt)
-        wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/DCDH2023/{tvt}.xlsx')
+        #wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/DCDH2023/{tvt}.xlsx')
+    cursor.close()
