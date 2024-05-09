@@ -1,1 +1,1 @@
-000
+Time = Time.text
