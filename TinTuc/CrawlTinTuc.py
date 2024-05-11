@@ -29,12 +29,12 @@ def Crawl_News(url, topic):
                     Time = Time.text if Time else ""
                     Descript = li.find('p',{'class':'decription'})
                     Descript = Descript.text if Descript else ""
-                    print(Time)
-                    if len(Title) > 0 and len(Href) > 0 and len(Time) > 0 and len(Descript) > 0 and len(Img) > 0 and topic != 'Hỏi - Đáp':
+                    
+                    if len(Title) > 0 and len(Href) > 0 and len(Descript) > 0 and len(Img) > 0 and topic != 'Hỏi - Đáp':
                         data.append((topic, Img, Title, Href, Time, Descript))
-                        # cursor.execute("insert TinTuc values (?,?,?,?,?,?)",(topic,Img,Title,Time,Descript,Href))
-                        # cursor.commit()
-                        #print(Descript)
+                        cursor.execute("insert TinTuc values (?,?,?,?,?,?)",(topic,Img,Title,Time,Descript,Href))
+                        cursor.commit()
+                        print(Title)
                         
         else: 
             print("huhu") 
@@ -68,15 +68,18 @@ if __name__ == '__main__':
     data_DH = read_excel(file_name)
     data_post=[]
     z=0
-    # for topic,href in data_DH:
-    #     url='https://thi.tuyensinh247.com' + href
-    #     bg=url[0:len(url)-4-1]
-    #     en=url[len(url)-4-1:len(url)]
-    #     for i in range(1,11):
-    #         finalUrl=bg+"/"+str(i)+en
-    #         z+=1
-    #         dt = Crawl_News(finalUrl, topic)
-    #         #print("Trang: ",i," ",len(data))
-    #         data_post.extend(dt)
-    # Write_To_Excel(data_post)
-    dt = Crawl_News("https://thi.tuyensinh247.com/dap-an-de-thi-c16/1.html", "Test")
+    for topic,href in data_DH:
+        url='https://thi.tuyensinh247.com' + href
+        bg=url[0:len(url)-4-1]
+        en=url[len(url)-4-1:len(url)]
+        for i in range(1,11):
+            finalUrl=bg+"/"+str(i)+en
+            z+=1
+            print("Chu de: ",topic," trang: ",finalUrl)
+            dt = Crawl_News(finalUrl, topic)
+            Write_To_Excel(dt)
+            #print("Trang: ",i," ",len(data))
+            #data_post.extend(dt)
+        #print(topic," ",len(data_post))
+    #Write_To_Excel(data_post)
+    #dt = Crawl_News("https://thi.tuyensinh247.com/dap-an-de-thi-c16/1.html", "Test")

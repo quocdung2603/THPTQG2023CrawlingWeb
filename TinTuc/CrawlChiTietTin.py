@@ -20,11 +20,13 @@ def Crawl_CTBV(url, href):
                         dt["href"] = href
                         dt["content"] = ct
                         dt["img"] = ""
+                        #print(dt)
                         data.append(dt)
-                    if len(img) > 0:
+                    else:
                         dt["href"] = href
                         dt["content"] = ""
                         dt["img"] = img
+                        #print(dt)
                         data.append(dt)
     else:
         print("huhu")
