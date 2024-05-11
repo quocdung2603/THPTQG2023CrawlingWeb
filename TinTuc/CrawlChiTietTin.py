@@ -16,17 +16,8 @@ def Crawl_CTBV(url, href):
                     ct = p.text
                     I = p.find('img')
                     img = I.get('src') if I else ""
-                    if len(ct) > 0:
-                        dt["href"] = href
-                        dt["content"] = ct
-                        dt["img"] = ""
-                        #print(dt)
-                        data.append(dt)
-                    else:
-                        dt["href"] = href
-                        dt["content"] = ""
-                        dt["img"] = img
-                        #print(dt)
+                    if ct or img:
+                        dt = {"href": href, "content": ct, "img": img}
                         data.append(dt)
     else:
         print("huhu")
@@ -34,13 +25,13 @@ def Crawl_CTBV(url, href):
 
 def Write_to_Excel(data, file_name):
     wb = Workbook()
-    sheet_name = "Chi Tiết Bài Viết"
+    sheet_name = file_name
     worksheet = wb.active
     worksheet.title = sheet_name
     worksheet.append(["Href", "Content", "Image"])
     for item in data:
         worksheet.append([item.get("href", ""), item.get("content", ""), item.get("img", "")])
-    wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/Test/{file_name}.xlsx')
+    wb.save(f"{file_name}.xlsx")
     print('Lưu thành công')
 
 def read_excel(file_name):
@@ -58,8 +49,11 @@ if __name__ == '__main__':
     file_name = 'data_TinTuc.xlsx'
     data_TinTuc = read_excel(file_name)
     data_post_detail = []
+    i=0
     for topic, amh, title, href, time, descript in data_TinTuc:
         url = "https://thi.tuyensinh247.com" + href
+        i+=1
+        print(i,url)
         da = Crawl_CTBV(url, href)
         data_post_detail.extend(da)
     Write_to_Excel(data_post_detail, 'ChiTietBaiViet')

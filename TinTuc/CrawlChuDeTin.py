@@ -28,7 +28,8 @@ def Crawl_ChuDe(url):
                 if len(topic) > 0 and len(href) > 0:
                     if href[0] != '/':
                         href = Convert(href)
-                    data[href] = topic
+                    if topic != 'Hỏi - Đáp':
+                        data[href] = topic
                             
             li64 = uls.find('li', {'rel': '64'})
             if li64:
@@ -37,7 +38,8 @@ def Crawl_ChuDe(url):
                 if len(topic) > 0 and len(href) > 0:
                     if href[0] != '/':
                         href = Convert(href)
-                    data[href] = topic
+                    if topic != 'Hỏi - Đáp':
+                        data[href] = topic
                     
             li84 = uls.find('li', {'rel': '84'})
             if li84:
@@ -46,7 +48,8 @@ def Crawl_ChuDe(url):
                 if len(topic) > 0 and len(href) > 0:
                     if href[0] != '/':
                         href = Convert(href)
-                    data[href] = topic
+                    if topic != 'Hỏi - Đáp':
+                        data[href] = topic
                 
             li16 = uls.find('li', {'rel': '16'})
             if li16:
@@ -60,7 +63,8 @@ def Crawl_ChuDe(url):
                             if len(topic) > 0 and len(href) > 0:
                                 if href[0] != '/':
                                     href = Convert(href)
-                                data[href] = topic
+                                if topic != 'Hỏi - Đáp':
+                                    data[href] = topic
                             
             li17 = uls.find('li', {'rel': '17'})
             if li17:
@@ -97,7 +101,8 @@ def Crawl_ChuDe(url):
                             if len(topic) > 0 and len(href) > 0:
                                 if href[0] != '/':
                                     href = Convert(href)
-                                data[href] = topic
+                                if topic != 'Hỏi - Đáp':
+                                    data[href] = topic
     return data
 
 def Write_to_Excel(data, file_name):

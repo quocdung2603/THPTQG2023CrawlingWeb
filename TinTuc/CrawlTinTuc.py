@@ -2,8 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook, load_workbook
 import pyodbc
-conx = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\\SQLEXPRESS;DATABASE=Diem_Thi_THPTQG;UID=lekiet;PWD=123456')
-cursor = conx.cursor()
+# conx = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\\SQLEXPRESS;DATABASE=Diem_Thi_THPTQG;UID=lekiet;PWD=123456')
+# cursor = conx.cursor()
 data=[]
 def Crawl_News(url, topic):
     response = requests.get(url)
@@ -31,9 +31,9 @@ def Crawl_News(url, topic):
                     
                     if len(Title) > 0 and len(Href) > 0 and len(Descript) > 0 and len(Img) > 0 and topic != 'Hỏi - Đáp':
                         data.append((topic, Img, Title, Href, Time, Descript))
-                        cursor.execute("insert TinTuc values (?,?,?,?,?,?)",(topic,Img,Title,Time,Descript,Href))
-                        cursor.commit()
-                        print(Title)
+                        # cursor.execute("insert TinTuc values (?,?,?,?,?,?)",(topic,Img,Title,Time,Descript,Href))
+                        # cursor.commit()
+                        # print(Title)
                         
         else: 
             print("huhu") 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
         for i in range(1,11):
             finalUrl=bg+"/"+str(i)+en
             z+=1
-            print("Chu de: ",topic," trang: ",finalUrl)
+            # print("Chu de: ",topic," trang: ",finalUrl)
             dt = Crawl_News(finalUrl, topic)
             Write_To_Excel(dt)
             #print("Trang: ",i," ",len(data))
