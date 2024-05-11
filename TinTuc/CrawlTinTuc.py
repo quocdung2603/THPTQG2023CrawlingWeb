@@ -19,7 +19,6 @@ def Crawl_News(url, topic):
                     Img = li.find('img',{'class':'img-132'})
                     Img = Img.get('src') if Img else ""
                     h3 = li.find('h3')
-                   
                     if h3:
                         Title = h3.find('strong')
                         if Title:
