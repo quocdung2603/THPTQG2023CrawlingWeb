@@ -10,45 +10,41 @@ def Crawl_CTBV(url, href):
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')    
         div = soup.find('div', {'id': 'mainContent'})
-        tmp=str(div)
-        cursor.execute("insert test1 values (?,?)",(tmp,href))
-        cursor.commit()
-        print("Xong")
-    #     if div: 
-    #         ps = div.find_all('p')
-    #         if ps:
-    #             tmp=""
-    #             for p in ps:
-    #                 dt = {}
-    #                 ct = p.text
-    #                 I = p.find('img')
-    #                 img = I.get('src') if I else ""
-    #                 if len(ct) > 0:
-    #                     dt["href"] = href
-    #                     dt["content"] = ct
-    #                     dt["img"] = ""
-    #                     #print(dt)
-    #                     data.append(dt)
-    #                 else:
-    #                     dt["href"] = href
-    #                     dt["content"] = ""
-    #                     dt["img"] = img
-    #                     #print(dt)
-    #                     data.append(dt)
-    # else:
-    #     print("huhu")
-    return div
+        if div: 
+            ps = div.find_all('p')
+            if ps:
+                for p in ps:
+                    dt = {}
+                    ct = p.text
+                    I = p.find('img')
+                    img = I.get('src') if I else ""
+                    if len(ct) > 0:
+                        dt["href"] = href
+                        dt["content"] = ct
+                        dt["img"] = ""
+                        #print(dt)
+                        data.append(dt)
+                    else:
+                        dt["href"] = href
+                        dt["content"] = ""
+                        dt["img"] = img
+                        #print(dt)
+                        data.append(dt)
+    else:
+        print("huhu")
+    return data
 
-def Write_to_Excel(data, file_name):
+def Write_to_Excel(data):
     wb = Workbook()
-    sheet_name = "Chi Tiết Bài Viết"
+    sheet_name = "ChiTietBaiViet"
     worksheet = wb.active
     worksheet.title = sheet_name
-    worksheet.append(["Href", "Content", "Image"])
-    for item in data:
-        worksheet.append([item.get("href", ""), item.get("content", ""), item.get("img", "")])
-    wb.save(f'D:/TDMU/Nam3/HK2/KTLTinPTTK/project/Test/{file_name}.xlsx')
+    worksheet.append(["Href", "Content"])
+    for href, div in data:
+        worksheet.append([href, str(div)])  # Chuyển div thành chuỗi trước khi ghi vào Excel
+    wb.save("ChiTietBaiViet.xlsx")
     print('Lưu thành công')
+
 
 def read_excel(file_name):
     data = []
@@ -62,12 +58,11 @@ def read_excel(file_name):
     return data   
 
 if __name__ == '__main__':
-    # file_name = 'data_TinTuc.xlsx'
-    # data_TinTuc = read_excel(file_name)
-    # data_post_detail = []
-    # for topic, amh, title, href, time, descript in data_TinTuc:
-    #     url = "https://thi.tuyensinh247.com" + href
-    #     da = Crawl_CTBV(url, href)
-    #     data_post_detail.extend(da)
-    # Write_to_Excel(data_post_detail, 'ChiTietBaiViet')
-    Crawl_CTBV("https://thi.tuyensinh247.com/thong-tin-tuyen-sinh-dai-hoc-quoc-te-sai-gon-2024-c24a79555.html","/cac-truong-quan-doi-tuyen-bo-sung-nam-2023-c24a78281.html")
+    file_name = 'data_TinTuc.xlsx'
+    data_TinTuc = read_excel(file_name)
+    data_post_detail = []
+    for topic, amh, title, href, time, descript in data_TinTuc:
+        url = "https://thi.tuyensinh247.com" + href
+        da = Crawl_CTBV(url, href)
+        data_post_detail.extend(da)
+    Write_to_Excel(data_post_detail, 'ChiTietBaiViet')
