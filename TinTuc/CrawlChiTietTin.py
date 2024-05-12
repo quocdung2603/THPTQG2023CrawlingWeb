@@ -9,30 +9,23 @@ def Crawl_CTBV(url, href):
         soup = BeautifulSoup(response.content, 'html.parser')    
         div = soup.find('div', {'id': 'mainContent'})
         if div: 
-            ps = div.find_all('p')
-            if ps:
-                for p in ps:
-                    dt = {}
-                    ct = p.text
-                    I = p.find('img')
-                    img = I.get('src') if I else ""
-                    if ct or img:
-                        dt = {"href": href, "content": ct, "img": img}
-                        data.append(dt)
+            data.append((href, div))
+            #print(div)
     else:
         print("huhu")
     return data
 
-def Write_to_Excel(data, file_name):
+def Write_to_Excel(data):
     wb = Workbook()
-    sheet_name = file_name
+    sheet_name = "ChiTietBaiViet"
     worksheet = wb.active
     worksheet.title = sheet_name
-    worksheet.append(["Href", "Content", "Image"])
-    for item in data:
-        worksheet.append([item.get("href", ""), item.get("content", ""), item.get("img", "")])
-    wb.save(f"{file_name}.xlsx")
+    worksheet.append(["Href", "Content"])
+    for href, div in data:
+        worksheet.append([href, str(div)])  # Chuyển div thành chuỗi trước khi ghi vào Excel
+    wb.save("ChiTietBaiViet.xlsx")
     print('Lưu thành công')
+
 
 def read_excel(file_name):
     data = []
@@ -55,5 +48,5 @@ if __name__ == '__main__':
         i+=1
         print(i,url)
         da = Crawl_CTBV(url, href)
-        data_post_detail.extend(da)
-    Write_to_Excel(data_post_detail, 'ChiTietBaiViet')
+        Write_to_Excel(da)
+        break
